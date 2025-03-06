@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     private UserService userService;
@@ -25,7 +26,7 @@ public class UserController {
         User user;
         try{
             user= userService.registerUser(userRegistrationRequestDto.getFirstName(),userRegistrationRequestDto.getLastName(), userRegistrationRequestDto.getEmail(),
-                    userRegistrationRequestDto.getPassword(),userRegistrationRequestDto.getPhoneNumber());
+                    userRegistrationRequestDto.getPassword(),userRegistrationRequestDto.getUserName());
             userRegistrationResponseDto.setResponseError(ResponseError.SUCCESS);
             userRegistrationResponseDto.setName(user.getFirstName()+" "+user.getLastName());
             userRegistrationResponseDto.setUserId(user.getId());
