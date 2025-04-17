@@ -29,7 +29,7 @@ public class UserService {
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
             user.setPassword(bCryptPasswordEncoder.encode(password));
 
-            user.setPhoneNumber(phoneNumber);
+            user.setUserName(phoneNumber);
         } catch (Exception exception) {
             throw new RuntimeException("Error registering user", exception);
         }

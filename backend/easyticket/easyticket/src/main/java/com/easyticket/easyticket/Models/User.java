@@ -17,7 +17,7 @@ public class User extends BaseModel {
     private String email;
 
     @Column(unique = true, nullable = false)
-    private String phoneNumber;
+    private String userName;
 
     @JsonIgnore
     private String password;
