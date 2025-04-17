@@ -77,15 +77,22 @@ const Register = () => {
                         password: formData.password,
                     }),
                 });
-    
+                
                 if (!response.ok) {
                     throw new Error("Failed to register. Please try again.");
                 }
     
-                const userData = await response.json(); // Parse response data
+                //const userData = await response.json(); // Parse response data
     
                 // ✅ Save user data to localStorage
-                localStorage.setItem("user", JSON.stringify(userData));
+                localStorage.setItem("user", JSON.stringify({
+                    id: formData.id,
+                    email: formData.email,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    password: formData.password, // if applicable
+                }));
+                
     
                 alert("Registered successfully!");
                 navigate("/login");
