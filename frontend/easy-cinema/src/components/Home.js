@@ -1,90 +1,127 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "../styles/styles.css";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "../styles/home.css";
 
-const featuredMovies = [
-  { title: "The Recruit", image: "./images/The Recruit.jpg", duration: "2h 15m", rating: "⭐⭐⭐⭐" },
-  { title: "Night Agent 2", image: "./images/NightAgent2.jpg", duration: "1h 50m", rating: "⭐⭐⭐⭐⭐" },
-  { title: "How To Train Your Dragon 2", image: "./images/how to train your dragon.jpg", duration: "2h 30m", rating: "⭐⭐⭐⭐" },
-];
-
-const movies = [
-  { title: "The Recruit", image: "./images/The Recruit.jpg", duration: "2h 15m", rating: "⭐⭐⭐⭐" },
-  { title: "Night Agent 2", image: "./images/NightAgent2.jpg", duration: "1h 50m", rating: "⭐⭐⭐⭐⭐" },
-  { title: "How To Train Your Dragon 2", image: "./images/how to train your dragon.jpg", duration: "2h 30m", rating: "⭐⭐⭐⭐" },
-  { title: "Mission Impossible: Dead Reckoning", image: "./images/MissionImpossible.jpg", duration: "2h 30m", rating: "⭐⭐⭐⭐" },
-  { title: "Avatar: The Way of Water", image: "./images/Avatar2.jpg", duration: "3h 12m", rating: "⭐⭐⭐⭐⭐" },
-  { title: "Guardians of the Galaxy Vol. 3", image: "./images/Guardians3.jpg", duration: "2h 30m", rating: "⭐⭐⭐⭐" },
-  { title: "John Wick: Chapter 4", image: "./images/JohnWick4.jpg", duration: "2h 49m", rating: "⭐⭐⭐⭐⭐" },
-  { title: "Spider-Man: No Way Home", image: "./images/SpiderMan3.jpg", duration: "2h 28m", rating: "⭐⭐⭐⭐⭐" },
-];
 const Home = () => {
-  return (
-    <div className="home-container">
-      {/* Header */}
-      <header className="header">
-        <div className="logo-container">
-          <img src="./images/logo.jpeg" alt="Easy Cinema Logo" className="header-logo" />
-          <span className="site-name">Easy Cinema</span>
+    const [trendingMovies, setTrendingMovies] = useState([]);
+    const [newMovies, setNewMovies] = useState([]);
+    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchMovies("trending", setTrendingMovies);
+        fetchMovies("now_playing", setNewMovies);
+        startCountdown();
+    }, []);
+
+    const fetchMovies = async (category, setter) => {
+        try {
+            const response = await axios.get(
+                `https://api.themoviedb.org/3/movie/${category}?api_key=feec295a7d623037a27dc6e600040c5b&language=en-US&page=1`
+            );
+            setter(response.data.results);
+        } catch (error) {
+            console.error("Error fetching movies:", error);
+        }
+    };
+
+    const startCountdown = () => {
+        const targetDate = new Date("2025-07-30T00:00:00").getTime();
+        const interval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(interval);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            setTimeLeft({ days, hours, minutes, seconds });
+        }, 1000);
+    };
+
+    return (
+        <div className="home-page">
+            {/* Hero Section */}
+            <section className="hero-section">
+                <div className="hero-overlay">
+                    <h1 className="animate-title">
+                        Our Special <span>Movies</span>
+                    </h1>
+                    <p className="animate-subtitle">Welcome to EasyTicket - Your one stop for all movie experiences.</p>
+                    <button className="hero-button">Read More</button>
+                </div>
+            </section>
+
+            {/* Trending Movies */}
+            <section className="category-section">
+                <h2 className="section-title">Trending Movies</h2>
+                <div className="movie-grid">
+                    {trendingMovies.slice(0, 4).map((movie) => (
+                        <div key={movie.id} className="movie-card trending" onClick={() => navigate(`/movie/${movie.id}`)}>
+                            <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+                            <div className="movie-info">
+                                <h3>{movie.title}</h3>
+                                <p>⭐ {movie.vote_average}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* New Movies */}
+            <section className="category-section now-playing-section">
+                <h2 className="section-title">Now Playing</h2>
+                <div className="movie-grid horizontal-scroll">
+                    {newMovies.slice(0, 10).map((movie, index) => (
+                        <div
+                            key={movie.id}
+                            className={`movie-card now-playing zoom-in delay-${index}`}
+                            onClick={() => navigate(`/movie/${movie.id}`)}
+                        >
+                            <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+                            <div className="movie-info">
+                                <h3>{movie.title}</h3>
+                                <p>⭐ {movie.vote_average}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Coming Soon Section */}
+            <section
+                className="coming-soon animated-bg enhanced-coming-soon"
+                style={{
+                    backgroundImage: `url('https://image.tmdb.org/t/p/original${trendingMovies[0]?.backdrop_path}')`,
+                }}
+            >
+                <div className="coming-overlay">
+                    <div className="countdown-wrapper">
+                        <h4>Releases In</h4>
+                        <div className="countdown">
+                            <span>{String(timeLeft.days).padStart(2, "0")}</span>:<span>{String(timeLeft.hours).padStart(2, "0")}</span>:
+                            <span>{String(timeLeft.minutes).padStart(2, "0")}</span>:<span>{String(timeLeft.seconds).padStart(2, "0")}</span>
+                        </div>
+                    </div>
+                    <div className="coming-title glow">
+                        AVENGERS: <strong>ENDGAME</strong>
+                    </div>
+                    <p className="coming-description fade-in">
+                        After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the
+                        Avengers assemble once more to reverse Thanos’ actions.
+                    </p>
+                    <button className="book-btn pulse">Book Ticket</button>
+                </div>
+            </section>
         </div>
-        <nav className="nav-bar">
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/movies">Movies</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
-            <li><button>Logout</button></li>
-          </ul>
-        </nav>
-      </header>
-
-      {/* Hero Section with Featured Movies */}
-      <section className="hero-section">
-        {featuredMovies.map((movie, index) => (
-          <div className="featured-movie" key={index}>
-            <img src={movie.image} alt={movie.title} className="featured-image" />
-            <div className="movie-details">
-              <h2>{movie.title}</h2>
-              <p>Experience the thrill and adventure of {movie.title} on the big screen.</p>
-              <div className="movie-info">
-                <span>Duration: {movie.duration}</span>
-                <span>Rating: {movie.rating}</span>
-              </div>
-              <div className="movie-actions">
-                <button>Watch Trailer</button>
-                <button>Buy Ticket</button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* Movie List */}
-      <section className="movie-list">
-        <h2>Now Showing</h2>
-        <div className="movie-grid">
-          {movies.map((movie, index) => (
-            <div className="movie-card" key={index}>
-              <img src={movie.image} alt={movie.title} className="movie-thumbnail" />
-              <p>{movie.title}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; 2025 Easy Cinema. All rights reserved.</p>
-          <p className="address">123 Movie Street, Film City, CA 90210</p>
-          <div className="social-icons">
-            <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+    );
 };
-
 
 export default Home;
