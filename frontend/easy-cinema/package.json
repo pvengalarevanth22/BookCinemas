@@ -4,11 +4,8 @@
   "private": true,
   "dependencies": {
     "axios": "^1.8.1",
-<<<<<<< HEAD
     "bootstrap": "^5.3.3",
-=======
     "cors": "^2.8.5",
->>>>>>> 064ebe3bb508b2a8f4c69827e8f75816fd46d439
     "cra-template": "1.2.0",
     "framer-motion": "^12.4.10",
     "react": "^19.0.0",
