@@ -65,22 +65,22 @@ const Register = () => {
         if (validate()) {
             setApiError(null);
             try {
-                const response = await fetch("http://localhost:8080/users/register", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        firstName: formData.firstName,
-                        lastName: formData.lastName,
-                        email: formData.email,
-                        password: formData.password,
-                    }),
-                });
+                // const response = await fetch("http://localhost:8080/users/register", {
+                //     method: "POST",
+                //     headers: {
+                //         "Content-Type": "application/json",
+                //     },
+                //     body: JSON.stringify({
+                //         firstName: formData.firstName,
+                //         lastName: formData.lastName,
+                //         email: formData.email,
+                //         password: formData.password,
+                //     }),
+                // });
                 
-                if (!response.ok) {
-                    throw new Error("Failed to register. Please try again.");
-                }
+                // if (!response.ok) {
+                //     throw new Error("Failed to register. Please try again.");
+                // }
     
                 //const userData = await response.json(); // Parse response data
     
